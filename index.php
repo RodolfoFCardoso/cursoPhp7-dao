@@ -46,10 +46,21 @@ $aluno->setDessenha("@lun0");
 $aluno->insert();
 */
 
+//Alterar um usuário.
+/*
 $usuario = new Usuario();
 
 $usuario->loadById(8);
 $usuario->update("Carlos", "!@#teste");
 
+echo $usuario;
+*/
+
+$usuario = new Usuario();
+
+$usuario->loadById(9);
+
+$usuario->delete();
+ 
 echo $usuario;
  ?>
