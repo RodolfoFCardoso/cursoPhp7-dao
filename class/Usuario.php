@@ -34,6 +34,9 @@ class Usuario {
 				public function setDtCadastro($value){
 					$this->dtcadastro=$value;
 				}
+
+
+
 				// Carrega um usuário pelo ID do Banco de dados.
 				public function loadById($id){
 
@@ -44,12 +47,7 @@ class Usuario {
 
 					if (isset ($result[0])) {
 
-						$row = $result[0];
-
-						$this->setIdUsuario($row['idusuario']);
-						$this->setDesLogin($row['deslogin']);
-						$this->setDesSenha($row['dessenha']);
-						$this->setDtCadastro(new DateTime($row['dtcadastro']));
+						$this->setData($result[0]);
 					}
 				}
 
@@ -91,17 +89,52 @@ class Usuario {
 
 					if (isset ($result[0])) {
 
-						$row = $result[0];
+						$this->setData($result[0]);
 
-						$this->setIdUsuario($row['idusuario']);
-						$this->setDesLogin($row['deslogin']);
-						$this->setDesSenha($row['dessenha']);
-						$this->setDtCadastro(new DateTime($row['dtcadastro']));
 					}else {
 						throw new Exception("Login e/ou senha inválidos.");
 						
 					}
 
+				}
+
+				public function setData($data){
+
+						$this->setIdUsuario($data['idusuario']);
+						$this->setDesLogin($data['deslogin']);
+						$this->setDesSenha($data['dessenha']);
+						$this->setDtCadastro(new DateTime($data['dtcadastro']));
+
+				}
+
+				public function insert(){
+
+					$sql = new Sql();
+
+				$result = $sql->select("CALL sp_usuarios_insert(:LOGIN, :PASSWORD)", array (
+ 					'LOGIN'=>$this->getDesLogin(),
+ 					'PASSWORD'=>$this->getDesSenha()
+				));
+
+				if (count($result) > 0) {
+					$this->setData($result[0]);
+				}
+
+
+				}
+
+				public function update($login, $password){
+
+					$this->setDesLogin($login);
+					$this->setDesSenha($password);
+
+					$sql = new Sql();
+
+					$sql->query("UPDATE tb_usuarios SET deslogin = :LOGIN, dessenha = :PASSWORD, WHERE idusuario = :ID", array(
+						':LOGIN'=>$this->getDesLogin(),
+						':PASSWORD'=>$this->getDesSenha(),
+						':ID'=>$this->getIdUsuario()
+				));
 				}
 }
 
